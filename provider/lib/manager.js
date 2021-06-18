@@ -529,14 +529,22 @@ module.exports = function (logger, triggerDB, redisClient) {
     }
 
     this.authRequest = function (triggerData, options, cb) {
-
-        authHandler.handleAuth(triggerData, options)
-        .then(requestOptions => {
-            request(requestOptions, cb);
-        })
-        .catch(err => {
-            cb(err);
-        });
+        if (process.env.DISABLE_AUTH) {
+            new Promise(function (resolve, reject) {
+                request(options, cb);
+            })
+                .catch(err => {
+                    cb(err);
+                });
+        } else {
+            authHandler.handleAuth(triggerData, options)
+                .then(requestOptions => {
+                    request(requestOptions, cb);
+                })
+                .catch(err => {
+                    cb(err);
+                });
+        }
     };
 
     function parseQName(qname, separator) {

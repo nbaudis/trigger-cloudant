@@ -29,6 +29,7 @@ module.exports = function (logger, triggerDB, redisClient) {
     this.endpointAuth = process.env.ENDPOINT_AUTH;
     this.exitOnDBError = process.env.EXIT_ON_DB_ERROR || 'false';
     this.routerHost = process.env.ROUTER_HOST || 'localhost';
+    this.routerProtocol = process.env.ROUTER_PROTOCOL || 'https://';
     this.worker = process.env.WORKER || 'worker0';
     this.host = process.env.HOST_INDEX || 'host0';
     this.hostPrefix = this.host.replace(/\d+$/, '');
@@ -208,7 +209,7 @@ module.exports = function (logger, triggerDB, redisClient) {
 
         logger.info(method, 'Database change detected for', triggerData.id);
 
-        var host = 'https://' + self.routerHost;
+        var host = self.routerProtocol + self.routerHost;
         var uri = host + '/api/v1/namespaces/' + triggerObj.namespace + '/triggers/' + triggerObj.name;
 
         postTrigger(triggerData, form, uri, 0)
